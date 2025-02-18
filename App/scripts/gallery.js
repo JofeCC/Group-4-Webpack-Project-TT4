@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const closeBtn = document.getElementById("close");
 
 
-const imageContext = require.context('../images', false, /\.(svg|png|jpg)$/);
+    const imageContext = require.context('../images', false, /\.(svg|png|jpg|jpeg|gif)$/);
 
 
 const images = imageContext.keys().map(imageContext);
@@ -31,5 +31,28 @@ images.forEach((src) => {
     closeBtn.onclick = function() {
         modal.style.display = "none";
     };
+
+    document.getElementById('uploadForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+    
+        const fileInput = document.getElementById('imageInput');
+        const formData = new FormData();
+    
+        if (fileInput.files.length > 0) {
+            formData.append("image", fileInput.files[0]);
+    
+            fetch('http://localhost:3000/upload', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => console.error('Error:', error));
+        } else {
+            alert('Please select an image to upload');
+        }
+    });
 
 });

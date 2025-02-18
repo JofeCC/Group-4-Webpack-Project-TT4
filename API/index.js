@@ -1,9 +1,8 @@
-// NODEJS
-
-// Declare the libraries
 const express = require("express");
 const mysql = require("mysql2/promise");
 const cors = require("cors");
+const multer = require("multer");
+const path = require("path");
 
 const app = express();
 const port = 3000;
@@ -19,14 +18,31 @@ const dbConfig = {
 app.use(cors());
 app.use(express.json());
 
-// HTTP VERBS: POST, GET, PUT, PATCH, OPTIONS
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, '../App/images/'); // Folder where images will be stored
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // file name
+  }
+});
 
-// first endpoint
+const upload = multer({ storage });
+
+// First endpoint
 app.get("/", (req, res) => {
   res.status(200).json({ message: "API is running" });
 });
 
-// POST create / save in database
+// Endpoint to upload images
+app.post("/upload", upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "No image was uploaded." });
+  }
+  res.status(201).json({ message: "Image uploaded successfully", file: req.file });
+});
+
+// POST to create/save in the database
 app.post("/message", async (req, res) => {
   const { name, email, message } = req.body;
 
@@ -46,7 +62,7 @@ app.post("/message", async (req, res) => {
   }
 });
 
-// GET, list the messages
+// GET to list the messages
 app.get("/message", async (req, res) => {
   try {
     const conn = await mysql.createConnection(dbConfig);
@@ -58,6 +74,7 @@ app.get("/message", async (req, res) => {
   }
 });
 
+// Initialize the database
 async function initDatabase() {
   try {
     const conn = await mysql.createConnection(dbConfig);
