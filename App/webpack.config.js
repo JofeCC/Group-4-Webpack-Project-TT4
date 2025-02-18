@@ -2,12 +2,14 @@ const path = require('path');
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { link } = require('fs');
 
 module.exports = {
     entry: {
       main: './scripts/main.js',
       contact: './scripts/contact.js',
       gallery: './scripts/gallery.js',
+      list: './scripts/list.js',
     },
 
     output: {
@@ -60,9 +62,9 @@ module.exports = {
         filename: 'gallery.html',
       }),
       new HtmlWebpackPlugin({
-        template: './gallery.html',
-        chunks: ['gallery'],
-        filename: 'gallery.html',
+        template: './list.html',
+        chunks: ['list'],
+        filename: 'list.html',
       }),
     ],
 

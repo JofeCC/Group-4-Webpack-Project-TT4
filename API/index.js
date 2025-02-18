@@ -1,8 +1,9 @@
 // NODEJS
 
 // Declare the libraries
-const express = require("express"); // minimalist framework
-const mysql = require("mysql2/promise"); // mysql database library
+const express = require("express");
+const mysql = require("mysql2/promise");
+const cors = require("cors");
 
 const app = express();
 const port = 3000;
@@ -12,16 +13,17 @@ const dbConfig = {
   user: "in-class-user",
   password: "123456",
   database: "in-class-db",
-  port: 3306, 
+  port: 3306,
 };
+
+app.use(cors());
 app.use(express.json());
 
 // HTTP VERBS: POST, GET, PUT, PATCH, OPTIONS
 
 // first endpoint
-// GET
 app.get("/", (req, res) => {
-  res.status(200).json({ message: "API is runing" });
+  res.status(200).json({ message: "API is running" });
 });
 
 // POST create / save in database
@@ -29,28 +31,28 @@ app.post("/message", async (req, res) => {
   const { name, email, message } = req.body;
 
   if (!name || !email || !message) {
-    return res.status(400).json({ error: "All field are required" });
+    return res.status(400).json({ error: "All fields are required" });
   }
 
   try {
     const conn = await mysql.createConnection(dbConfig);
-    const query = "INSERT INTO users (name, email, message) VALUES (?, ?, ?)";
+    const query = "INSERT INTO messages (name, email, message) VALUES (?, ?, ?)";
     await conn.execute(query, [name, email, message]);
     await conn.end();
 
     res.status(201).json({ message: "Created with success" });
   } catch (e) {
-    res.status(500), json({ error: `Something happens in the server: ${e}` });
+    res.status(500).json({ error: `Something happened on the server: ${e}` });
   }
 });
 
-// GET, list the messages; we can use the same route becasue they are differents protocols
-app.get("/message", async () => {
+// GET, list the messages
+app.get("/message", async (req, res) => {
   try {
     const conn = await mysql.createConnection(dbConfig);
-    const [rows] = await conn.execute("SELECT * FROM messages"); // an object { ..., rows: [{..}]}
+    const [rows] = await conn.execute("SELECT * FROM messages");
     await conn.end();
-    res.status(200).json(rows); // [ {name, email, message} ]
+    res.status(200).json(rows);
   } catch (e) {
     res.status(500).json({ error: `Fail: ${e}` });
   }
@@ -59,7 +61,7 @@ app.get("/message", async () => {
 async function initDatabase() {
   try {
     const conn = await mysql.createConnection(dbConfig);
-    const [tables] = await conn.query("SHOW TABLES like 'messages'"); // an object {..., tables: [ ... ]}
+    const [tables] = await conn.query("SHOW TABLES like 'messages'");
 
     if (tables.length === 0) {
       const createTableQuery = `
@@ -85,10 +87,8 @@ async function initDatabase() {
   }
 }
 
-
-
 initDatabase().then(() => {
   app.listen(port, () => {
-    console.log(`The server is runing, PORT: ${port}`);
+    console.log(`The server is running, PORT: ${port}`);
   });
-})
+});

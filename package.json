@@ -1,0 +1,19 @@
+{
+  "name": "group-4-webpack-project-tt4",
+  "version": "1.0.0",
+  "description": "Luis Cantor\r Joaquín cervantes\r Bruna Paes",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cantorLacs/Group-4-Webpack-Project-TT4.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cantorLacs/Group-4-Webpack-Project-TT4/issues"
+  },
+  "homepage": "https://github.com/cantorLacs/Group-4-Webpack-Project-TT4#readme"
+}
